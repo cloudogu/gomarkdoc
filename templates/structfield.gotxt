@@ -1,0 +1,5 @@
+{{- header .Level .Name -}}
+{{- spacer -}}
+
+{{- template "doc" .Doc -}}
+{{- spacer -}}
