@@ -11,6 +11,11 @@ github = new GitHub(this, gitWrapper)
 changelog = new Changelog(this)
 Gpg gpg = new Gpg(this, docker)
 
+// Configuration of repository
+repositoryOwner = "cloudogu"
+repositoryName = "gomarkdoc"
+project = "github.com/${repositoryOwner}/${repositoryName}"
+
 // Configuration of branches
 productionReleaseBranch = "main"
 
@@ -29,7 +34,9 @@ node('docker') {
         }
 
         stage('Build') {
-            make 'compile'
+            callInGoContainer{
+                make 'compile'
+            }
         }
 
         stageAutomaticRelease()
@@ -49,7 +56,9 @@ void stageAutomaticRelease() {
 
     stage('Build after Release') {
         git.checkout(releaseVersion)
-        make 'clean compile checksum'
+        callInGoContainer{
+            make 'clean compile checksum'
+        }
     }
 
     stage('Sign after Release'){
@@ -66,4 +75,14 @@ void stageAutomaticRelease() {
 
 void make(String makeArgs) {
     sh "make ${makeArgs}"
+}
+
+void callInGoContainer(Closure closure) {
+    new Docker(this)
+            .image('golang:1.19.7')
+            .mountJenkinsUser()
+            .inside("--volume ${WORKSPACE}:/go/src/${project} -w /go/src/${project}")
+                    {
+                        closure.call()
+                    }
 }
