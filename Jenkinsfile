@@ -29,7 +29,7 @@ node('docker') {
         }
 
         stage('Build') {
-            make 'compile-generic'
+            make 'compile'
         }
 
         stageAutomaticRelease()
@@ -49,7 +49,7 @@ void stageAutomaticRelease() {
 
     stage('Build after Release') {
         git.checkout(releaseVersion)
-        make 'clean compile-generic checksum'
+        make 'clean compile checksum'
     }
 
     stage('Sign after Release'){
