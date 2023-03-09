@@ -202,6 +202,18 @@ func copyFieldListWithFields(list *ast.FieldList, fields []*ast.Field) *ast.Fiel
 }
 
 func copyFieldWithoutDoc(field *ast.Field) *ast.Field {
+	copyField := &ast.Field{
+		Doc:     nil,
+		Names:   field.Names,
+		Type:    field.Type,
+		Tag:     field.Tag,
+		Comment: field.Comment,
+	}
+
+	if field.Doc == nil {
+		return copyField
+	}
+
 	text := field.Doc.Text()
 	docs := &ast.CommentGroup{}
 
@@ -212,9 +224,10 @@ func copyFieldWithoutDoc(field *ast.Field) *ast.Field {
 	}
 
 	if text != "" {
+		summary := extractSummary(text)
 		comment := &ast.Comment{
 			Slash: pos,
-			Text:  fmt.Sprintf(" // %s...", extractSummary(text)),
+			Text:  fmt.Sprintf("// %s..", strings.ReplaceAll(summary, "\n", "")),
 		}
 
 		docs.List = append(docs.List, comment)
@@ -222,11 +235,7 @@ func copyFieldWithoutDoc(field *ast.Field) *ast.Field {
 		docs = nil
 	}
 
-	return &ast.Field{
-		Doc:     docs,
-		Names:   field.Names,
-		Type:    field.Type,
-		Tag:     field.Tag,
-		Comment: nil,
-	}
+	copyField.Doc = docs
+
+	return copyField
 }

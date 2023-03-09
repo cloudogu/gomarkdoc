@@ -10,3 +10,8 @@ README-test.md
 *.swp
 *.swo
 *~
+
+# Makefiles
+target/
+.env
+
