@@ -23,7 +23,7 @@ func TestCommand(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./simple",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -44,7 +44,7 @@ func TestCommand_check(t *testing.T) {
 		"gomarkdoc", "./simple",
 		"-c",
 		"-o", "{{.Dir}}/README.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -62,7 +62,7 @@ func TestCommand_nested(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./nested/...",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -85,7 +85,7 @@ func TestCommand_unexported(t *testing.T) {
 		"gomarkdoc", "./unexported",
 		"-u",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -127,7 +127,7 @@ func TestCommand_invalidCheck(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./simple",
 		"-c",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -149,7 +149,7 @@ func TestCommand_defaultDirectory(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/simple/",
 	}
@@ -169,7 +169,7 @@ func TestCommand_nonexistant(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./nonexistant",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -190,7 +190,7 @@ func TestCommand_tags(t *testing.T) {
 		"gomarkdoc", "./tags",
 		"--tags", "tagged",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -214,7 +214,7 @@ func TestCommand_tagsWithGOFLAGS(t *testing.T) {
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -240,7 +240,7 @@ func TestCommand_tagsWithGOFLAGSNoTags(t *testing.T) {
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -266,7 +266,7 @@ func TestCommand_tagsWithGOFLAGSNoParse(t *testing.T) {
 		"gomarkdoc", "./tags",
 		"--config", "../.gomarkdoc-empty.yml",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -289,7 +289,7 @@ func TestCommand_embed(t *testing.T) {
 		"gomarkdoc", "./embed",
 		"--embed",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}
@@ -315,7 +315,7 @@ func TestCommand_untagged(t *testing.T) {
 	os.Args = []string{
 		"gomarkdoc", "./untagged",
 		"-o", "{{.Dir}}/README-test.md",
-		"--repository.url", "https://github.com/princjef/gomarkdoc",
+		"--repository.url", "https://github.com/cloudogu/gomarkdoc",
 		"--repository.default-branch", "master",
 		"--repository.path", "/testData/",
 	}

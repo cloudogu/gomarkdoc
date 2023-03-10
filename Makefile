@@ -16,3 +16,7 @@ include build/make/clean.mk
 
 
 default: compile
+
+.PHONY: generate
+generate:
+	go generate .

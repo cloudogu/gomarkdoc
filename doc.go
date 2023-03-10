@@ -9,11 +9,11 @@
 // If you want to use this package as a command-line tool, you can install the
 // command by running the following on go 1.16+:
 //
-//	go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+//	go install github.com/cloudogu/gomarkdoc/cmd/gomarkdoc@latest
 //
 // For older versions of go, you can install using the following method instead:
 //
-//	GO111MODULE=on go get -u github.com/princjef/gomarkdoc/cmd/gomarkdoc
+//	GO111MODULE=on go get -u github.com/cloudogu/gomarkdoc/cmd/gomarkdoc
 //
 // The command line tool supports configuration for all of the features of the
 // importable package:
@@ -84,7 +84,7 @@
 //	gomarkdoc --output '{{.Dir}}/README.md' ./...
 //
 // You can see all of the data available to the output template in the
-// PackageSpec struct in the github.com/princjef/gomarkdoc/cmd/gomarkdoc
+// PackageSpec struct in the github.com/cloudogu/gomarkdoc/cmd/gomarkdoc
 // package.
 //
 // # Template Overrides
@@ -193,7 +193,7 @@
 // --repository.default-branch and --repository.path options. For example, this
 // repository would be configured with:
 //
-//	gomarkdoc --repository.url "https://github.com/princjef/gomarkdoc" --repository.default-branch master --repository.path / -o README.md .
+//	gomarkdoc --repository.url "https://github.com/cloudogu/gomarkdoc" --repository.default-branch master --repository.path / -o README.md .
 //
 // # Configuring via File
 //
@@ -227,9 +227,9 @@
 //		"fmt"
 //		"os"
 //
-//		"github.com/princjef/gomarkdoc"
-//		"github.com/princjef/gomarkdoc/lang"
-//		"github.com/princjef/gomarkdoc/logger"
+//		"github.com/cloudogu/gomarkdoc"
+//		"github.com/cloudogu/gomarkdoc/lang"
+//		"github.com/cloudogu/gomarkdoc/logger"
 //	)
 //
 //	func main() {
@@ -264,7 +264,7 @@
 // # Examples
 //
 // This project uses itself to generate the README files in
-// github.com/princjef/gomarkdoc and its subdirectories. To see the commands
+// github.com/cloudogu/gomarkdoc and its subdirectories. To see the commands
 // that are run to generate documentation for this repository, take a look at
 // the Doc() and DocVerify() functions in magefile.go and the .gomarkdoc.yml
 // file in the root of this repository. To run these commands in your own

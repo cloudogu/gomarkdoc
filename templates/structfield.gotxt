@@ -2,4 +2,3 @@
 {{- spacer -}}
 
 {{- template "doc" .Doc -}}
-{{- spacer -}}
