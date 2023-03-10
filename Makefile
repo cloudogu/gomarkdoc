@@ -11,6 +11,7 @@ GO_BUILD_FLAGS?=-mod=vendor -a -tags netgo $(LDFLAGS) -installsuffix cgo -o $(BI
 include build/make/variables.mk
 include build/make/build.mk
 include build/make/self-update.mk
+include build/make/digital-signature.mk
 include build/make/dependencies-gomod.mk
 include build/make/clean.mk
 
