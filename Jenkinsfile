@@ -50,9 +50,10 @@ void stageAutomaticRelease() {
     }
 
     String releaseVersion = git.getSimpleBranchName()
+    String releaseBranch = git.getBranchName()
 
     stage('Build after Release') {
-        git.checkout(releaseVersion)
+        git.checkout(releaseBranch)
         callInGoContainer{
             make 'clean compile checksum'
         }
