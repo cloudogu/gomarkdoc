@@ -90,8 +90,8 @@ documentation for this repository has been regenerated:
 mage doc
 ```
 
-[issues]: https://github.com/princjef/gomarkdoc/issues
-[new pull request]: https://github.com/princjef/gomarkdoc/compare
+[issues]: https://github.com/cloudogu/gomarkdoc/issues
+[new pull request]: https://github.com/cloudogu/gomarkdoc/compare
 [github reactions]: https://blog.github.com/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/
 [github fork]: https://help.github.com/articles/fork-a-repo
 [golang]: https://golang.org/

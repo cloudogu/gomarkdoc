@@ -10,3 +10,11 @@ README-test.md
 *.swp
 *.swo
 *~
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Makefiles
+target/
+.env
+

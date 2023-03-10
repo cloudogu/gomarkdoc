@@ -133,3 +133,79 @@ func formatDocParagraph(paragraph string) string {
 
 	return mergedParagraph.String()
 }
+
+func createDeclCopyWithoutComments(from *ast.GenDecl) *ast.GenDecl {
+	var specs []ast.Spec
+	for _, spec := range from.Specs {
+		switch spec.(type) {
+		case *ast.TypeSpec:
+			typeSpec := spec.(*ast.TypeSpec)
+			switch typeSpec.Type.(type) {
+			case *ast.StructType:
+				structType := *typeSpec.Type.(*ast.StructType)
+
+				var copyFields []*ast.Field
+				fields := structType.Fields
+
+				for _, field := range fields.List {
+					fieldCopy := copyFieldWithoutDoc(field)
+					copyFields = append(copyFields, fieldCopy)
+				}
+
+				listCopy := copyFieldListWithFields(fields, copyFields)
+				structTypeCopy := copyStructTypeWithFieldList(structType, listCopy)
+				specs = append(specs, copySpecWithStructType(typeSpec, structTypeCopy))
+			}
+		}
+	}
+
+	return copyGenDeclWithSpecs(from, specs)
+}
+
+func copyGenDeclWithSpecs(decl *ast.GenDecl, specs []ast.Spec) *ast.GenDecl {
+	return &ast.GenDecl{
+		Doc:    decl.Doc,
+		TokPos: decl.TokPos,
+		Tok:    decl.Tok,
+		Lparen: decl.Lparen,
+		Specs:  specs,
+		Rparen: decl.Rparen,
+	}
+}
+
+func copySpecWithStructType(spec *ast.TypeSpec, typeSpec *ast.StructType) *ast.TypeSpec {
+	return &ast.TypeSpec{
+		Doc:        spec.Doc,
+		Name:       spec.Name,
+		TypeParams: spec.TypeParams,
+		Assign:     spec.Assign,
+		Type:       typeSpec,
+		Comment:    spec.Comment,
+	}
+}
+
+func copyStructTypeWithFieldList(structTyp ast.StructType, fieldList *ast.FieldList) *ast.StructType {
+	return &ast.StructType{
+		Struct:     structTyp.Struct,
+		Fields:     fieldList,
+		Incomplete: structTyp.Incomplete,
+	}
+}
+
+func copyFieldListWithFields(list *ast.FieldList, fields []*ast.Field) *ast.FieldList {
+	return &ast.FieldList{
+		Opening: list.Opening,
+		List:    fields,
+		Closing: list.Closing,
+	}
+}
+
+func copyFieldWithoutDoc(field *ast.Field) *ast.Field {
+	return &ast.Field{
+		Doc:     nil,
+		Names:   field.Names,
+		Type:    field.Type,
+		Tag:     field.Tag,
+		Comment: field.Comment,
+	}
+}
