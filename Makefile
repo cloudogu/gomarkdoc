@@ -14,6 +14,7 @@ include build/make/self-update.mk
 include build/make/digital-signature.mk
 include build/make/dependencies-gomod.mk
 include build/make/clean.mk
+include build/make/release.mk
 
 
 default: compile
