@@ -1,7 +1,6 @@
 package lang
 
 import (
-	"fmt"
 	"go/ast"
 	"go/printer"
 	"go/token"
@@ -202,40 +201,11 @@ func copyFieldListWithFields(list *ast.FieldList, fields []*ast.Field) *ast.Fiel
 }
 
 func copyFieldWithoutDoc(field *ast.Field) *ast.Field {
-	copyField := &ast.Field{
+	return &ast.Field{
 		Doc:     nil,
 		Names:   field.Names,
 		Type:    field.Type,
 		Tag:     field.Tag,
 		Comment: field.Comment,
 	}
-
-	if field.Doc == nil {
-		return copyField
-	}
-
-	text := field.Doc.Text()
-	docs := &ast.CommentGroup{}
-
-	pos := token.NoPos
-	list := field.Doc.List
-	if len(list) > 0 {
-		pos = list[0].Slash
-	}
-
-	if text != "" {
-		summary := extractSummary(text)
-		comment := &ast.Comment{
-			Slash: pos,
-			Text:  fmt.Sprintf("// %s..", strings.ReplaceAll(summary, "\n", "")),
-		}
-
-		docs.List = append(docs.List, comment)
-	} else {
-		docs = nil
-	}
-
-	copyField.Doc = docs
-
-	return copyField
 }
