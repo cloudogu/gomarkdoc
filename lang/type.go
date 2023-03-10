@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+	"go/ast"
 	"go/doc"
 	"strings"
 )
@@ -56,9 +57,9 @@ func (typ *Type) Doc() *Doc {
 }
 
 // Decl provides the raw text representation of the code for the type's
-// declaration.
+// declaration without field comments since we print those after the type codeblock.
 func (typ *Type) Decl() (string, error) {
-	return printNode(typ.doc.Decl, typ.cfg.FileSet)
+	return printNode(createDeclCopyWithoutComments(typ.doc.Decl), typ.cfg.FileSet)
 }
 
 // Examples lists the examples pertaining to the type from the set provided on
@@ -124,6 +125,49 @@ func (typ *Type) Consts() []*Value {
 	}
 
 	return consts
+}
+
+// Fields lists the field declaration blocks of a struct type.
+func (typ *Type) Fields() []*Field {
+	fields := make([]*Field, len(typ.getStructFields()))
+	for i, c := range typ.getStructFields() {
+		fields[i] = NewField(typ.cfg.Inc(1), c, typ.examples)
+	}
+
+	return fields
+}
+
+func (typ *Type) getStructFields() []*ast.Field {
+	genDecl := typ.doc.Decl
+	for _, spec := range genDecl.Specs {
+		switch spec.(type) {
+		case *ast.TypeSpec:
+			typeSpec := spec.(*ast.TypeSpec)
+			switch typeSpec.Type.(type) {
+			case *ast.StructType:
+				return typeSpec.Type.(*ast.StructType).Fields.List
+			}
+		}
+	}
+
+	return nil
+}
+
+// IsStructType returns true if the actual type is a struct. False otherwise.
+func (typ *Type) IsStructType() bool {
+	genDecl := typ.doc.Decl
+	for _, spec := range genDecl.Specs {
+		switch spec.(type) {
+		case *ast.TypeSpec:
+			typeSpec := spec.(*ast.TypeSpec)
+			switch typeSpec.Type.(type) {
+			case *ast.StructType:
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 // Vars lists the var declaration blocks containing values of this type.
