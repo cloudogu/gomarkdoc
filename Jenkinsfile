@@ -9,7 +9,8 @@ gitWrapper.committerEmail = 'cesmarvin@cloudogu.com'
 gitflow = new GitFlow(this, gitWrapper)
 github = new GitHub(this, gitWrapper)
 changelog = new Changelog(this)
-Gpg gpg = new Gpg(this, docker)
+Docker docker = new Docker(this)
+gpg = new Gpg(this, docker)
 
 // Configuration of repository
 repositoryOwner = "cloudogu"
