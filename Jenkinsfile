@@ -55,7 +55,7 @@ void stageAutomaticRelease() {
     }
 
     stage('Build after Release') {
-        git.checkout(releaseVersion)
+        gitWrapper.checkout(releaseVersion)
         callInGoContainer{
             make 'clean compile checksum signature'
         }
