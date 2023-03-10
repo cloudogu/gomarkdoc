@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v0.4.1-2] - 2023-03-10
 ### Added
 - Modify original functionality to produce just markdown for structs. Field docs in these
 structs will be removed and placed under the code block of the struct.
+
+## [v0.4.1-1]
+This version was not released.
