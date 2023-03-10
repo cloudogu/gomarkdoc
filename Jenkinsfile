@@ -3,11 +3,11 @@
 import com.cloudogu.ces.cesbuildlib.*
 
 // Creating necessary git objects, object cannot be named 'git' as this conflicts with the method named 'git' from the library
-gitWrapper = new Git(this, "cesmarvin")
-gitWrapper.committerName = 'cesmarvin'
-gitWrapper.committerEmail = 'cesmarvin@cloudogu.com'
-gitflow = new GitFlow(this, gitWrapper)
-github = new GitHub(this, gitWrapper)
+git = new Git(this, "cesmarvin")
+git.committerName = 'cesmarvin'
+git.committerEmail = 'cesmarvin@cloudogu.com'
+gitflow = new GitFlow(this, git)
+github = new GitHub(this, git)
 changelog = new Changelog(this)
 Docker docker = new Docker(this)
 gpg = new Gpg(this, docker)
@@ -49,17 +49,17 @@ void stageAutomaticRelease() {
         return
     }
 
-    String releaseVersion = gitWrapper.getSimpleBranchName()
-
-    stage('Finish Release') {
-        gitflow.finishRelease(releaseVersion, productionReleaseBranch)
-    }
+    String releaseVersion = git.getSimpleBranchName()
 
     stage('Build after Release') {
-        gitWrapper.checkout(releaseVersion)
+        git.checkout(releaseVersion)
         callInGoContainer{
             make 'clean compile checksum signature'
         }
+    }
+    
+    stage('Finish Release') {
+        gitflow.finishRelease(releaseVersion, productionReleaseBranch)
     }
 
     stage('Sign after Release'){
