@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.4.1-3] - 2023-03-10
+- re-release due to technical problems in the release workflow
+
 ## [v0.4.1-2] - 2023-03-10
 ### Added
 - Modify original functionality to produce just markdown for structs. Field docs in these
