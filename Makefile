@@ -1,6 +1,6 @@
 # Set these to the desired values
 ARTIFACT_ID=gomarkdoc
-VERSION=0.4.1-5
+VERSION=0.4.1-6
 
 GOTAG?=1.19.7
 MAKEFILES_VERSION=7.5.0
