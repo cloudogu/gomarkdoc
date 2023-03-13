@@ -31,6 +31,7 @@ type (
 	PackageOptions struct {
 		includeUnexported   bool
 		repositoryOverrides *Repo
+		includeFiles        []string
 	}
 
 	// PackageOption configures one or more options for the package.
@@ -66,7 +67,7 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		return nil, err
 	}
 
-	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported)
+	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported, options.includeFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -97,6 +98,15 @@ func PackageWithUnexportedIncluded() PackageOption {
 func PackageWithRepositoryOverrides(repo *Repo) PackageOption {
 	return func(opts *PackageOptions) error {
 		opts.repositoryOverrides = repo
+		return nil
+	}
+}
+
+// PackageWithIncludeFiles can be used along with the NewPackageFromBuild function to specify
+// a list of files which should only be used for generation.
+func PackageWithIncludeFiles(includeFiles []string) PackageOption {
+	return func(opts *PackageOptions) error {
+		opts.includeFiles = includeFiles
 		return nil
 	}
 }
@@ -277,11 +287,22 @@ func findFileInParent(dir, filename string, fileIsDir bool) (*os.File, bool) {
 	return nil, false
 }
 
-func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool) (*doc.Package, error) {
+func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool, includeFiles []string) (*doc.Package, error) {
 	pkgs, err := parser.ParseDir(
 		fs,
 		pkg.Dir,
 		func(info os.FileInfo) bool {
+			foundInclude := false
+			for _, include := range includeFiles {
+				if include == info.Name() {
+					foundInclude = true
+				}
+			}
+			// If includeFiles are specified and the file was not found in the list skip the parsing.
+			if includeFiles != nil && len(includeFiles) > 0 && !foundInclude {
+				return false
+			}
+
 			for _, name := range pkg.GoFiles {
 				if name == info.Name() {
 					return true

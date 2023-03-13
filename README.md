@@ -3,6 +3,8 @@
 # Cloudogu gomarkdoc
 
 - Used for internal code documentation where field comments from structs should be extracted.
+- Added option `includeFiles`
+  - used to generation markdown only for specified files in a package
 
 # Update templates
 

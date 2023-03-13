@@ -59,6 +59,7 @@ type commandOptions struct {
 	check                 bool
 	embed                 bool
 	version               bool
+	includeFiles          []string
 }
 
 // Flags populated by goreleaser
@@ -99,6 +100,7 @@ func buildCommand() *cobra.Command {
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
+			opts.includeFiles = viper.GetStringSlice("includeFiles")
 
 			if opts.check && opts.output == "" {
 				return errors.New("gomarkdoc: check mode cannot be run without an output set")
@@ -227,6 +229,12 @@ func buildCommand() *cobra.Command {
 		false,
 		"Print the version.",
 	)
+	command.Flags().StringSliceVar(
+		&opts.includeFiles,
+		"includeFiles",
+		[]string{},
+		"Set of files which should be used for generation. Default: All files from package",
+	)
 
 	// We ignore the errors here because they only happen if the specified flag doesn't exist
 	_ = viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
@@ -244,6 +252,7 @@ func buildCommand() *cobra.Command {
 	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
 	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
 	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
+	_ = viper.BindPFlag("includeFiles", command.Flags().Lookup("includeFiles"))
 
 	return command
 }
@@ -416,6 +425,7 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 
 		var pkgOpts []lang.PackageOption
 		pkgOpts = append(pkgOpts, lang.PackageWithRepositoryOverrides(&opts.repository))
+		pkgOpts = append(pkgOpts, lang.PackageWithIncludeFiles(opts.includeFiles))
 
 		if opts.includeUnexported {
 			pkgOpts = append(pkgOpts, lang.PackageWithUnexportedIncluded())
