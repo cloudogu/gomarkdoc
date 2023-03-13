@@ -134,6 +134,16 @@ func (pkg *Package) Name() string {
 	return pkg.doc.Name
 }
 
+// Title provides the formatted name of the package. It is primarily designed for
+// generating headers.
+func (pkg *Package) Title() string {
+	format := "package %s"
+	if pkg.Name() == "main" {
+		return fmt.Sprintf(format, pkg.Dirname())
+	}
+	return fmt.Sprintf(format, pkg.Name())
+}
+
 // Import provides the raw text for the import declaration that is used to
 // import code from the package. If your package's documentation is generated
 // from a local path and does not use Go Modules, this will typically print

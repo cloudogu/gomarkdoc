@@ -1,8 +1,4 @@
-{{- if eq .Name "main" -}}
-	{{- header .Level .Dirname -}}
-{{- else -}}
-	{{- header .Level .Name -}}
-{{- end -}}
+{{- header .Level .Title -}}
 {{- spacer -}}
 
 {{- if len .Doc.Blocks -}}
