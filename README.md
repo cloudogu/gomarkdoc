@@ -11,6 +11,14 @@
 - modify template in `templates/`
 - run `make generate`
 
+# Installation
+
+- `go install github.com/cloudogu/gomarkdoc/cmd/gomarkdoc`
+
+# Usage
+
+- gomarkdoc . --output doc.md --includeFiles dogu_v2.go
+
 # Example output
 
 ## type [HealthCheck](<https://github.com/cloudogu/cesapp-lib/blob/develop/core/dogu_v2.go#L173-L194>)
