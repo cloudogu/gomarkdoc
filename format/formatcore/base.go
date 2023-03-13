@@ -122,7 +122,7 @@ func GFMAccordionTerminator() string {
 
 // Paragraph formats a paragraph with the provided text as the contents
 func Paragraph(text string) string {
-	return Escape(text)
+	return text
 }
 
 var (

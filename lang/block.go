@@ -1,6 +1,7 @@
 package lang
 
 import (
+	"fmt"
 	"go/doc/comment"
 	"regexp"
 	"strings"
@@ -109,20 +110,16 @@ func ParseBlocks(cfg *Config, blocks []comment.Block, inline bool) []*Block {
 }
 
 func printText(b *strings.Builder, text ...comment.Text) {
-	for i, t := range text {
-		if i > 0 {
-			b.WriteRune(' ')
-		}
-
+	for _, t := range text {
 		switch v := t.(type) {
 		case comment.Plain:
 			b.WriteString(string(v))
 		case comment.Italic:
 			b.WriteString(string(v))
 		case *comment.DocLink:
-			printText(b, v.Text...)
+			b.WriteString(fmt.Sprintf("[%s](#%s)", v.Name, v.Name))
 		case *comment.Link:
-			printText(b, v.Text...)
+			b.WriteString(fmt.Sprintf("%s(%s)", v.Text, v.URL))
 		}
 	}
 }
