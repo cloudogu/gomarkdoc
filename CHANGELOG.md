@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added option `includeFiles` to only generate markdown for specified files
 
+## [v0.4.1-7] - 2023-03-10
+- re-release due to technical problems in the release workflow (again)
+
 ## [v0.4.1-6] - 2023-03-10
 - re-release due to technical problems in the release workflow (again)
 
