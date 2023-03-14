@@ -40,6 +40,11 @@ const (
 
 const urlPckgGoDev = "https://pkg.go.dev"
 
+var (
+	gfmWhitespaceRegex = regexp.MustCompile(`\s`)
+	gfmRemoveRegex     = regexp.MustCompile(`[^\pL-_\d]+`)
+)
+
 // NewBlock creates a new block element of the provided kind and with the given
 // text contents and a flag indicating whether this block is part of an inline
 // element.
@@ -131,12 +136,12 @@ func printDocLink(docLink *comment.DocLink) string {
 	// Case [Volume]
 	text := fmt.Sprintf("%s", docLink.Text)
 	if docLink.ImportPath == "" {
-		return printLocalLink(text, docLink.Name)
+		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
 	}
 
 	// Case [core.Volume]
 	if docLink.ImportPath == actualPackage {
-		return printLocalLink(text, docLink.Name)
+		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
 	}
 
 	// Case [os.File] or [repourl/orga/package.type]
@@ -146,8 +151,18 @@ func printDocLink(docLink *comment.DocLink) string {
 	return fmt.Sprintf("%s(%s/%s)", text, urlPckgGoDev, docLink.ImportPath)
 }
 
+// TODO Local links are fixed in github format.
+// For other formats break extend block parsing.
+// Steps:
+// Separate paragraphs blocks with filtered [comment.DocLink]. -> new Block types DocLink
+// Extend template with this type.
 func printLocalLink(text, ref string) string {
-	return fmt.Sprintf("%s(#%s)", text, strings.TrimSpace(strings.ToLower(formatcore.PlainText(ref))))
+	result := formatcore.PlainText(ref)
+	result = strings.ToLower(result)
+	result = strings.TrimSpace(result)
+	result = gfmWhitespaceRegex.ReplaceAllString(result, "-")
+	result = gfmRemoveRegex.ReplaceAllString(result, "")
+	return fmt.Sprintf("%s(#%s)", text, result)
 }
 
 var whitespaceRegex = regexp.MustCompile(`\s+`)
