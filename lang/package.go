@@ -17,6 +17,11 @@ import (
 	"github.com/cloudogu/gomarkdoc/logger"
 )
 
+var (
+	actualPackage string
+	knownTypes    []*doc.Type
+)
+
 type (
 	// Package holds documentation information for a package and all of the
 	// symbols contained within it.
@@ -78,6 +83,12 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 	}
 
 	examples := doc.Examples(files...)
+
+	// Set this package variables is necessary for the [comment.DocLink] generation.
+	// With this information every .Doc can use this to modify the parser and recognize [comment.DocLink]
+	// in paragraphs.
+	actualPackage = docPkg.Name
+	knownTypes = docPkg.Types
 
 	return NewPackage(cfg, docPkg, examples), nil
 }

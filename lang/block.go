@@ -2,6 +2,7 @@ package lang
 
 import (
 	"fmt"
+	"github.com/cloudogu/gomarkdoc/format/formatcore"
 	"go/doc/comment"
 	"regexp"
 	"strings"
@@ -36,6 +37,8 @@ const (
 	// ListBlock defines a block that represents an ordered or unordered list.
 	ListBlock BlockKind = "list"
 )
+
+const urlPckgGoDev = "https://pkg.go.dev"
 
 // NewBlock creates a new block element of the provided kind and with the given
 // text contents and a flag indicating whether this block is part of an inline
@@ -117,11 +120,34 @@ func printText(b *strings.Builder, text ...comment.Text) {
 		case comment.Italic:
 			b.WriteString(string(v))
 		case *comment.DocLink:
-			b.WriteString(fmt.Sprintf("[%s](#%s)", v.Name, v.Name))
+			b.WriteString(printDocLink(v))
 		case *comment.Link:
 			b.WriteString(fmt.Sprintf("%s(%s)", v.Text, v.URL))
 		}
 	}
+}
+
+func printDocLink(docLink *comment.DocLink) string {
+	// Case [Volume]
+	text := fmt.Sprintf("%s", docLink.Text)
+	if docLink.ImportPath == "" {
+		return printLocalLink(text, docLink.Name)
+	}
+
+	// Case [core.Volume]
+	if docLink.ImportPath == actualPackage {
+		return printLocalLink(text, docLink.Name)
+	}
+
+	// Case [os.File] or [repourl/orga/package.type]
+	if docLink.Name != "" {
+		return fmt.Sprintf("%s(%s/%s#%s)", text, urlPckgGoDev, docLink.ImportPath, docLink.Name)
+	}
+	return fmt.Sprintf("%s(%s/%s)", text, urlPckgGoDev, docLink.ImportPath)
+}
+
+func printLocalLink(text, ref string) string {
+	return fmt.Sprintf("%s(#%s)", text, strings.TrimSpace(strings.ToLower(formatcore.PlainText(ref))))
 }
 
 var whitespaceRegex = regexp.MustCompile(`\s+`)
