@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Added option `includeFiles` to only generate markdown for specified files.
+- Added option `--include-files` to only generate markdown for specified files.
 - Added generation for external links.
 - Added simple generation of DocLinks.
 

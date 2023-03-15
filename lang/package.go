@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	actualPackage string
-	knownTypes    []*doc.Type
+	currentPackage string
+	knownTypes     []*doc.Type
 )
 
 type (
@@ -84,10 +84,10 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 
 	examples := doc.Examples(files...)
 
-	// Set this package variables is necessary for the [comment.DocLink] generation.
+	// Setting this package variables is necessary for the [comment.DocLink] generation.
 	// With this information every .Doc can use this to modify the parser and recognize [comment.DocLink]
 	// in paragraphs.
-	actualPackage = docPkg.Name
+	currentPackage = docPkg.Name
 	knownTypes = docPkg.Types
 
 	return NewPackage(cfg, docPkg, examples), nil
@@ -113,8 +113,8 @@ func PackageWithRepositoryOverrides(repo *Repo) PackageOption {
 	}
 }
 
-// PackageWithIncludeFiles can be used along with the NewPackageFromBuild function to specify
-// a list of files which should only be used for generation.
+// PackageWithIncludeFiles allows to specify a list of files which should only be used for generation.
+// This function should be used with NewPackageFromBuild.
 func PackageWithIncludeFiles(includeFiles []string) PackageOption {
 	return func(opts *PackageOptions) error {
 		opts.includeFiles = includeFiles
@@ -145,8 +145,7 @@ func (pkg *Package) Name() string {
 	return pkg.doc.Name
 }
 
-// Title provides the formatted name of the package. It is primarily designed for
-// generating headers.
+// Title provides the formatted name of the package.
 func (pkg *Package) Title() string {
 	format := "package %s"
 	if pkg.Name() == "main" {

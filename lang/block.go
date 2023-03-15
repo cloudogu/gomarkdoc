@@ -38,11 +38,13 @@ const (
 	ListBlock BlockKind = "list"
 )
 
-const urlPckgGoDev = "https://pkg.go.dev"
+const officialGoPackagesURL = "https://pkg.go.dev"
 
 var (
+	// Used to remove whitespaces from links like "Type Volume".
 	gfmWhitespaceRegex = regexp.MustCompile(`\s`)
-	gfmRemoveRegex     = regexp.MustCompile(`[^\pL-_\d]+`)
+	// Used to edit illegal links like "abc &f" to "abcf".
+	gfmRemoveRegex = regexp.MustCompile(`[^\pL-_\d]+`)
 )
 
 // NewBlock creates a new block element of the provided kind and with the given
@@ -133,22 +135,22 @@ func printText(b *strings.Builder, text ...comment.Text) {
 }
 
 func printDocLink(docLink *comment.DocLink) string {
-	// Case [Volume]
+	// case: link a symbol within the same type, f. i. [Volume]
 	text := fmt.Sprintf("%s", docLink.Text)
 	if docLink.ImportPath == "" {
 		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
 	}
 
-	// Case [core.Volume]
-	if docLink.ImportPath == actualPackage {
+	// case: link a symbol within the same file or package [core.Volume]
+	if docLink.ImportPath == currentPackage {
 		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
 	}
 
-	// Case [os.File] or [repourl/orga/package.type]
+	// case: link an external symbol outside the same file or package [os.File]
 	if docLink.Name != "" {
-		return fmt.Sprintf("%s(%s/%s#%s)", text, urlPckgGoDev, docLink.ImportPath, docLink.Name)
+		return fmt.Sprintf("%s(%s/%s#%s)", text, officialGoPackagesURL, docLink.ImportPath, docLink.Name)
 	}
-	return fmt.Sprintf("%s(%s/%s)", text, urlPckgGoDev, docLink.ImportPath)
+	return fmt.Sprintf("%s(%s/%s)", text, officialGoPackagesURL, docLink.ImportPath)
 }
 
 // TODO Local links are fixed in github format.
