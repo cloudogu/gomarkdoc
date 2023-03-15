@@ -3,11 +3,22 @@
 # Cloudogu gomarkdoc
 
 - Used for internal code documentation where field comments from structs should be extracted.
+- Added option `include-files`
+  - used to generation markdown only for specified files in a package
 
 # Update templates
 
 - modify template in `templates/`
 - run `make generate`
+
+# Installation
+
+- `go install github.com/cloudogu/gomarkdoc/cmd/gomarkdoc`
+  - requires go 1.19+
+
+# Usage
+
+- gomarkdoc ./core ./registry --output doc.md --include-files dogu_v2.go --include-files Node.go
 
 # Example output
 
