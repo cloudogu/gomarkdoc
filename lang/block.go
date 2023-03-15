@@ -42,9 +42,9 @@ const officialGoPackagesURL = "https://pkg.go.dev"
 
 var (
 	// Used to remove whitespaces from links like "Type Volume".
-	gfmWhitespaceRegex = regexp.MustCompile(`\s`)
+	githubMarkdownWhitespaceRegex = regexp.MustCompile(`\s`)
 	// Used to edit illegal links like "abc &f" to "abcf".
-	gfmRemoveRegex = regexp.MustCompile(`[^\pL-_\d]+`)
+	githubMarkdownRemoveRegex = regexp.MustCompile(`[^\pL-_\d]+`)
 )
 
 // NewBlock creates a new block element of the provided kind and with the given
@@ -162,8 +162,8 @@ func printLocalLink(text, ref string) string {
 	result := formatcore.PlainText(ref)
 	result = strings.ToLower(result)
 	result = strings.TrimSpace(result)
-	result = gfmWhitespaceRegex.ReplaceAllString(result, "-")
-	result = gfmRemoveRegex.ReplaceAllString(result, "")
+	result = githubMarkdownWhitespaceRegex.ReplaceAllString(result, "-")
+	result = githubMarkdownRemoveRegex.ReplaceAllString(result, "")
 	return fmt.Sprintf("%s(#%s)", text, result)
 }
 

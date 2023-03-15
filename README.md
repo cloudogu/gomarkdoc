@@ -17,7 +17,7 @@
 
 # Usage
 
-- gomarkdoc . --output doc.md --include-files dogu_v2.go
+- gomarkdoc ./core ./registry --output doc.md --include-files dogu_v2.go --include-files Node.go
 
 # Example output
 
