@@ -59,6 +59,7 @@ type commandOptions struct {
 	check                 bool
 	embed                 bool
 	version               bool
+	includeFiles          []string
 }
 
 // Flags populated by goreleaser
@@ -99,6 +100,7 @@ func buildCommand() *cobra.Command {
 			opts.repository.Remote = viper.GetString("repository.url")
 			opts.repository.DefaultBranch = viper.GetString("repository.defaultBranch")
 			opts.repository.PathFromRoot = viper.GetString("repository.path")
+			opts.includeFiles = viper.GetStringSlice("includeFiles")
 
 			if opts.check && opts.output == "" {
 				return errors.New("gomarkdoc: check mode cannot be run without an output set")
@@ -113,137 +115,145 @@ func buildCommand() *cobra.Command {
 		},
 	}
 
-	command.Flags().StringVar(
+	flags := command.Flags()
+	flags.StringVar(
 		&configFile,
 		"config",
 		"",
 		fmt.Sprintf("File from which to load configuration (default: %s.yml)", configFilePrefix),
 	)
-	command.Flags().BoolVarP(
+	flags.BoolVarP(
 		&opts.includeUnexported,
 		"include-unexported",
 		"u",
 		false,
 		"Output documentation for unexported symbols, methods and fields in addition to exported ones.",
 	)
-	command.Flags().StringVarP(
+	flags.StringVarP(
 		&opts.output,
 		"output",
 		"o",
 		"",
 		"File or pattern specifying where to write documentation output. Defaults to printing to stdout.",
 	)
-	command.Flags().BoolVarP(
+	flags.BoolVarP(
 		&opts.check,
 		"check",
 		"c",
 		false,
 		"Check the output to see if it matches the generated documentation. --output must be specified to use this.",
 	)
-	command.Flags().BoolVarP(
+	flags.BoolVarP(
 		&opts.embed,
 		"embed",
 		"e",
 		false,
 		"Embed documentation into existing markdown files if available, otherwise append to file.",
 	)
-	command.Flags().StringVarP(
+	flags.StringVarP(
 		&opts.format,
 		"format",
 		"f",
 		"github",
 		"Format to use for writing output data. Valid options: github (default), azure-devops, plain",
 	)
-	command.Flags().StringToStringVarP(
+	flags.StringToStringVarP(
 		&opts.templateOverrides,
 		"template",
 		"t",
 		map[string]string{},
 		"Custom template string to use for the provided template name instead of the default template.",
 	)
-	command.Flags().StringToStringVar(
+	flags.StringToStringVar(
 		&opts.templateFileOverrides,
 		"template-file",
 		map[string]string{},
 		"Custom template file to use for the provided template name instead of the default template.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.header,
 		"header",
 		"",
 		"Additional content to inject at the beginning of each output file.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.headerFile,
 		"header-file",
 		"",
 		"File containing additional content to inject at the beginning of each output file.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.footer,
 		"footer",
 		"",
 		"Additional content to inject at the end of each output file.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.footerFile,
 		"footer-file",
 		"",
 		"File containing additional content to inject at the end of each output file.",
 	)
-	command.Flags().StringSliceVar(
+	flags.StringSliceVar(
 		&opts.tags,
 		"tags",
 		defaultTags(),
 		"Set of build tags to apply when choosing which files to include for documentation generation.",
 	)
-	command.Flags().CountVarP(
+	flags.CountVarP(
 		&opts.verbosity,
 		"verbose",
 		"v",
 		"Log additional output from the execution of the command. Can be chained for additional verbosity.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.repository.Remote,
 		"repository.url",
 		"",
 		"Manual override for the git repository URL used in place of automatic detection.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.repository.DefaultBranch,
 		"repository.default-branch",
 		"",
 		"Manual override for the git repository URL used in place of automatic detection.",
 	)
-	command.Flags().StringVar(
+	flags.StringVar(
 		&opts.repository.PathFromRoot,
 		"repository.path",
 		"",
 		"Manual override for the path from the root of the git repository used in place of automatic detection.",
 	)
-	command.Flags().BoolVar(
+	flags.BoolVar(
 		&opts.version,
 		"version",
 		false,
 		"Print the version.",
 	)
+	flags.StringSliceVar(
+		&opts.includeFiles,
+		"include-files",
+		[]string{},
+		"Set of files which should be used for generation. Default: All files from package",
+	)
 
 	// We ignore the errors here because they only happen if the specified flag doesn't exist
-	_ = viper.BindPFlag("includeUnexported", command.Flags().Lookup("include-unexported"))
-	_ = viper.BindPFlag("output", command.Flags().Lookup("output"))
-	_ = viper.BindPFlag("check", command.Flags().Lookup("check"))
-	_ = viper.BindPFlag("embed", command.Flags().Lookup("embed"))
-	_ = viper.BindPFlag("format", command.Flags().Lookup("format"))
-	_ = viper.BindPFlag("template", command.Flags().Lookup("template"))
-	_ = viper.BindPFlag("templateFile", command.Flags().Lookup("template-file"))
-	_ = viper.BindPFlag("header", command.Flags().Lookup("header"))
-	_ = viper.BindPFlag("headerFile", command.Flags().Lookup("header-file"))
-	_ = viper.BindPFlag("footer", command.Flags().Lookup("footer"))
-	_ = viper.BindPFlag("footerFile", command.Flags().Lookup("footer-file"))
-	_ = viper.BindPFlag("tags", command.Flags().Lookup("tags"))
-	_ = viper.BindPFlag("repository.url", command.Flags().Lookup("repository.url"))
-	_ = viper.BindPFlag("repository.defaultBranch", command.Flags().Lookup("repository.default-branch"))
-	_ = viper.BindPFlag("repository.path", command.Flags().Lookup("repository.path"))
+	_ = viper.BindPFlag("includeUnexported", flags.Lookup("include-unexported"))
+	_ = viper.BindPFlag("output", flags.Lookup("output"))
+	_ = viper.BindPFlag("check", flags.Lookup("check"))
+	_ = viper.BindPFlag("embed", flags.Lookup("embed"))
+	_ = viper.BindPFlag("format", flags.Lookup("format"))
+	_ = viper.BindPFlag("template", flags.Lookup("template"))
+	_ = viper.BindPFlag("templateFile", flags.Lookup("template-file"))
+	_ = viper.BindPFlag("header", flags.Lookup("header"))
+	_ = viper.BindPFlag("headerFile", flags.Lookup("header-file"))
+	_ = viper.BindPFlag("footer", flags.Lookup("footer"))
+	_ = viper.BindPFlag("footerFile", flags.Lookup("footer-file"))
+	_ = viper.BindPFlag("tags", flags.Lookup("tags"))
+	_ = viper.BindPFlag("repository.url", flags.Lookup("repository.url"))
+	_ = viper.BindPFlag("repository.defaultBranch", flags.Lookup("repository.default-branch"))
+	_ = viper.BindPFlag("repository.path", flags.Lookup("repository.path"))
+	_ = viper.BindPFlag("includeFiles", flags.Lookup("include-files"))
 
 	return command
 }
@@ -416,6 +426,7 @@ func loadPackages(specs []*PackageSpec, opts commandOptions) error {
 
 		var pkgOpts []lang.PackageOption
 		pkgOpts = append(pkgOpts, lang.PackageWithRepositoryOverrides(&opts.repository))
+		pkgOpts = append(pkgOpts, lang.PackageWithIncludeFiles(opts.includeFiles))
 
 		if opts.includeUnexported {
 			pkgOpts = append(pkgOpts, lang.PackageWithUnexportedIncluded())

@@ -100,11 +100,7 @@ var templates = map[string]string{
     {{- end -}}
 
 {{- end -}}`,
-	"package": `{{- if eq .Name "main" -}}
-	{{- header .Level .Dirname -}}
-{{- else -}}
-	{{- header .Level .Name -}}
-{{- end -}}
+	"package": `{{- header .Level .Title -}}
 {{- spacer -}}
 
 {{- if len .Doc.Blocks -}}

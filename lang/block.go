@@ -1,6 +1,8 @@
 package lang
 
 import (
+	"fmt"
+	"github.com/cloudogu/gomarkdoc/format/formatcore"
 	"go/doc/comment"
 	"regexp"
 	"strings"
@@ -34,6 +36,15 @@ const (
 
 	// ListBlock defines a block that represents an ordered or unordered list.
 	ListBlock BlockKind = "list"
+)
+
+const officialGoPackagesURL = "https://pkg.go.dev"
+
+var (
+	// Used to remove whitespaces from links like "Type Volume".
+	githubMarkdownWhitespaceRegex = regexp.MustCompile(`\s`)
+	// Used to edit illegal links like "abc &f" to "abcf".
+	githubMarkdownRemoveRegex = regexp.MustCompile(`[^\pL-_\d]+`)
 )
 
 // NewBlock creates a new block element of the provided kind and with the given
@@ -109,22 +120,46 @@ func ParseBlocks(cfg *Config, blocks []comment.Block, inline bool) []*Block {
 }
 
 func printText(b *strings.Builder, text ...comment.Text) {
-	for i, t := range text {
-		if i > 0 {
-			b.WriteRune(' ')
-		}
-
+	for _, t := range text {
 		switch v := t.(type) {
 		case comment.Plain:
 			b.WriteString(string(v))
 		case comment.Italic:
 			b.WriteString(string(v))
 		case *comment.DocLink:
-			printText(b, v.Text...)
+			b.WriteString(printDocLink(v))
 		case *comment.Link:
-			printText(b, v.Text...)
+			b.WriteString(fmt.Sprintf("%s(%s)", v.Text, v.URL))
 		}
 	}
+}
+
+func printDocLink(docLink *comment.DocLink) string {
+	// case: link a symbol within the same type, f. i. [Volume]
+	text := fmt.Sprintf("%s", docLink.Text)
+	if docLink.ImportPath == "" {
+		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
+	}
+
+	// case: link a symbol within the same file or package [core.Volume]
+	if docLink.ImportPath == currentPackage {
+		return printLocalLink(text, fmt.Sprintf("Type %s", docLink.Name))
+	}
+
+	// case: link an external symbol outside the same file or package [os.File]
+	if docLink.Name != "" {
+		return fmt.Sprintf("%s(%s/%s#%s)", text, officialGoPackagesURL, docLink.ImportPath, docLink.Name)
+	}
+	return fmt.Sprintf("%s(%s/%s)", text, officialGoPackagesURL, docLink.ImportPath)
+}
+
+func printLocalLink(text, ref string) string {
+	result := formatcore.PlainText(ref)
+	result = strings.ToLower(result)
+	result = strings.TrimSpace(result)
+	result = githubMarkdownWhitespaceRegex.ReplaceAllString(result, "-")
+	result = githubMarkdownRemoveRegex.ReplaceAllString(result, "")
+	return fmt.Sprintf("%s(#%s)", text, result)
 }
 
 var whitespaceRegex = regexp.MustCompile(`\s+`)

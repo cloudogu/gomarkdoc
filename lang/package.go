@@ -17,6 +17,11 @@ import (
 	"github.com/cloudogu/gomarkdoc/logger"
 )
 
+var (
+	currentPackage string
+	knownTypes     []*doc.Type
+)
+
 type (
 	// Package holds documentation information for a package and all of the
 	// symbols contained within it.
@@ -31,6 +36,7 @@ type (
 	PackageOptions struct {
 		includeUnexported   bool
 		repositoryOverrides *Repo
+		includeFiles        []string
 	}
 
 	// PackageOption configures one or more options for the package.
@@ -66,7 +72,7 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 		return nil, err
 	}
 
-	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported)
+	docPkg, err := getDocPkg(pkg, cfg.FileSet, options.includeUnexported, options.includeFiles)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +83,12 @@ func NewPackageFromBuild(log logger.Logger, pkg *build.Package, opts ...PackageO
 	}
 
 	examples := doc.Examples(files...)
+
+	// Setting this package variables is necessary for the [comment.DocLink] generation.
+	// With this information every .Doc can use this to modify the parser and recognize [comment.DocLink]
+	// in paragraphs.
+	currentPackage = docPkg.Name
+	knownTypes = docPkg.Types
 
 	return NewPackage(cfg, docPkg, examples), nil
 }
@@ -97,6 +109,15 @@ func PackageWithUnexportedIncluded() PackageOption {
 func PackageWithRepositoryOverrides(repo *Repo) PackageOption {
 	return func(opts *PackageOptions) error {
 		opts.repositoryOverrides = repo
+		return nil
+	}
+}
+
+// PackageWithIncludeFiles allows to specify a list of files which should only be used for generation.
+// This function should be used with NewPackageFromBuild.
+func PackageWithIncludeFiles(includeFiles []string) PackageOption {
+	return func(opts *PackageOptions) error {
+		opts.includeFiles = includeFiles
 		return nil
 	}
 }
@@ -122,6 +143,15 @@ func (pkg *Package) Dirname() string {
 // package importing it.
 func (pkg *Package) Name() string {
 	return pkg.doc.Name
+}
+
+// Title provides the formatted name of the package.
+func (pkg *Package) Title() string {
+	format := "package %s"
+	if pkg.Name() == "main" {
+		return fmt.Sprintf(format, pkg.Dirname())
+	}
+	return fmt.Sprintf(format, pkg.Name())
 }
 
 // Import provides the raw text for the import declaration that is used to
@@ -277,11 +307,22 @@ func findFileInParent(dir, filename string, fileIsDir bool) (*os.File, bool) {
 	return nil, false
 }
 
-func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool) (*doc.Package, error) {
+func getDocPkg(pkg *build.Package, fs *token.FileSet, includeUnexported bool, includeFiles []string) (*doc.Package, error) {
 	pkgs, err := parser.ParseDir(
 		fs,
 		pkg.Dir,
 		func(info os.FileInfo) bool {
+			foundInclude := false
+			for _, include := range includeFiles {
+				if include == info.Name() {
+					foundInclude = true
+				}
+			}
+			// If includeFiles are specified and the file was not found in the list skip the parsing.
+			if includeFiles != nil && len(includeFiles) > 0 && !foundInclude {
+				return false
+			}
+
 			for _, name := range pkg.GoFiles {
 				if name == info.Name() {
 					return true
