@@ -153,11 +153,6 @@ func printDocLink(docLink *comment.DocLink) string {
 	return fmt.Sprintf("%s(%s/%s)", text, officialGoPackagesURL, docLink.ImportPath)
 }
 
-// TODO Local links are fixed in github format.
-// For other formats break extend block parsing.
-// Steps:
-// Separate paragraphs blocks with filtered [comment.DocLink]. -> new Block types DocLink
-// Extend template with this type.
 func printLocalLink(text, ref string) string {
 	result := formatcore.PlainText(ref)
 	result = strings.ToLower(result)
