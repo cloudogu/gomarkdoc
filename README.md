@@ -13,7 +13,8 @@
 
 # Installation
 
-- `go install github.com/cloudogu/gomarkdoc/cmd/gomarkdoc` -> requires go 1.19+
+- `go install github.com/cloudogu/gomarkdoc/cmd/gomarkdoc`
+  - requires go 1.19+
 
 # Usage
 
